@@ -19,9 +19,9 @@ knitr::opts_chunk$set(echo = TRUE)
 set.seed(123)
 library(emcite)
 use_python("/opt/anaconda3/bin/python")
-N <- 205
-n1 <- 150
-n2 <- 10
+N <- 1000
+n1 <- 200
+n2 <- 25
 td <- dgp(list("N"=N,"p"=4, "covariate"="linear", "y_mean"="linear", "ite"="linear"))
 s.td <- split_data(td, n1=n1)
 m1 <- train_model(s.td[["experimentation"]])
