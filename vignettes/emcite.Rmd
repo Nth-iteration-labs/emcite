@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r emcite}
 # Set up python
+set.seed(123)
 library(emcite)
 use_python("/opt/anaconda3/bin/python")
 N <- 205
