@@ -1,0 +1,23 @@
+Package: emcite
+Title: Batch Mode Active Learning for Individual Treatment Effect Estimation
+Version: 0.0.0.1
+Authors@R: 
+    person(given = "Anon",
+           family = "Anon",
+           email = "anon.anon@example.com",
+                  role = c("aut", "cre"))
+Description: Implementation for EMCITE algorithm in Batch Mode Active
+    Learning for Individual Treatment Effect Estimation submitted for KDD'20.
+License: What license it uses
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
+Depends:
+    data.table,
+    BART,
+    sgd,
+    purrr,
+    parallel,
+    reticulate
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr

@@ -1,0 +1,52 @@
+---
+title: "EMCITE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Code for EMCITE algorithm}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Package implementation of EMCITE algorithm
+
+
+```{r emcite}
+# Set up python
+library(emcite)
+use_python("/opt/anaconda3/bin/python")
+N <- 205
+n1 <- 150
+n2 <- 10
+td <- dgp(list("N"=N,"p"=4, "covariate"="linear", "y_mean"="linear", "ite"="linear"))
+s.td <- split_data(td, n1=n1)
+m1 <- train_model(s.td[["experimentation"]])
+tau.train.preds <- predict_ite(s.td[["experimentation"]], m1)
+tau.test.preds  <- predict_ite(s.td[["rollout"]], m1)
+
+thetas <- fit_gradient_descent(X=s.td[["experimentation"]][["X"]],
+                               tau_predictions=tau.train.preds$tau, 
+                               weight_types = 5)
+selections <-
+  sapply(c("random", "variance", "type-s", "emcite"), function(x)
+    af(
+      s.td,
+      tau_train = tau.train.preds$tau,
+      tau_test = tau.test.preds$tau,
+      theta = thetas,
+      n2 = n2,
+      type = x,
+      weight_types = 5
+    ), simplify = F, USE.NAMES = T)
+
+test <- sampling_data(s.td, selections[[1]])
+
+pehe_results <- sapply(selections, function(x) retrain_pehe(sampling_data(s.td, x)),
+                       simplify = F, USE.NAMES = T)
+
+print(pehe_results)
+```
+
