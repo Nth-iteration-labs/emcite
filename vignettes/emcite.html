@@ -354,7 +354,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 1s
+## time: 0s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -447,10 +447,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb19-13" data-line-number="13">      <span class="dt">weight_types =</span> <span class="dv">5</span></a>
 <a class="sourceLine" id="cb19-14" data-line-number="14">    ), <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a>
 <a class="sourceLine" id="cb19-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb19-16" data-line-number="16">test &lt;-<span class="st"> </span><span class="kw">sampling_data</span>(s.td, selections[[<span class="dv">1</span>]])</a>
-<a class="sourceLine" id="cb19-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb19-18" data-line-number="18">pehe_results &lt;-<span class="st"> </span><span class="kw">sapply</span>(selections, <span class="cf">function</span>(x) <span class="kw">retrain_pehe</span>(<span class="kw">sampling_data</span>(s.td, x)),</a>
-<a class="sourceLine" id="cb19-19" data-line-number="19">                       <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a></code></pre></div>
+<a class="sourceLine" id="cb19-16" data-line-number="16">results &lt;-<span class="st"> </span><span class="kw">sapply</span>(selections, <span class="cf">function</span>(x) <span class="kw">retrain_and_metrics</span>(<span class="kw">sampling_data</span>(s.td, x)),</a>
+<a class="sourceLine" id="cb19-17" data-line-number="17">                       <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a></code></pre></div>
 <pre><code>## *****Into main of pbart
 ## *****Data:
 ## data:n,p,np: 225, 4, 0
@@ -533,6 +531,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## number of x columns: 6
 ## from x,np,p: 6, 775
 ## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 50
+## number of x columns: 4
+## from x,np,p: 4, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
 ## *****Into main of pbart
 ## *****Data:
 ## data:n,p,np: 225, 4, 0
@@ -560,7 +579,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 1s
+## time: 0s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -615,6 +634,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## number of x columns: 6
 ## from x,np,p: 6, 775
 ## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 50
+## number of x columns: 4
+## from x,np,p: 4, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
 ## *****Into main of pbart
 ## *****Data:
 ## data:n,p,np: 225, 4, 0
@@ -642,7 +682,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 1s
+## time: 0s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -655,6 +695,109 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## *****burn and ndpost: 100, 1000
 ## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.425719
 ## *****sigma: 1.478347
+## *****w (weights): 1.000000 ... 1.000000
+## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
+## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
+## *****printevery: 100
+## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
+## 
+## MCMC
+## done 0 (out of 1100)
+## done 100 (out of 1100)
+## done 200 (out of 1100)
+## done 300 (out of 1100)
+## done 400 (out of 1100)
+## done 500 (out of 1100)
+## done 600 (out of 1100)
+## done 700 (out of 1100)
+## done 800 (out of 1100)
+## done 900 (out of 1100)
+## done 1000 (out of 1100)
+## time: 4s
+## check counts
+## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 50
+## number of x columns: 4
+## from x,np,p: 4, 775
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 775
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 775
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 50
+## number of x columns: 4
+## from x,np,p: 4, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
+## *****In main of C++ for bart prediction
+## tc (threadcount): 1
+## number of bart draws: 1000
+## number of trees in bart sum: 200
+## number of x columns: 6
+## from x,np,p: 6, 225
+## ***using serial code
+## *****Into main of pbart
+## *****Data:
+## data:n,p,np: 225, 4, 0
+## y1,yn: 1, 0
+## x1,x[n*p]: -1.961708, 0.000000
+## *****Number of Trees: 50
+## *****Number of Cut Points: 100 ... 1
+## *****burn and ndpost: 100, 1000
+## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
+## *****binaryOffset: -0.241860
+## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
+## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
+## *****printevery: 100
+## *****skiptr,skipte,skiptreedraws: 1,1,1
+## 
+## MCMC
+## done 0 (out of 1100)
+## done 100 (out of 1100)
+## done 200 (out of 1100)
+## done 300 (out of 1100)
+## done 400 (out of 1100)
+## done 500 (out of 1100)
+## done 600 (out of 1100)
+## done 700 (out of 1100)
+## done 800 (out of 1100)
+## done 900 (out of 1100)
+## done 1000 (out of 1100)
+## time: 1s
+## check counts
+## trcnt,tecnt: 1000,0
+## *****Into main of wbart
+## *****Data:
+## data:n,p,np: 225, 6, 0
+## y1,yn: -2.902798, 0.337143
+## x1,x[n*p]: -1.961708, 0.000000
+## *****Number of Trees: 200
+## *****Number of Cut Points: 100 ... 1
+## *****burn and ndpost: 100, 1000
+## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.516646
+## *****sigma: 1.628590
 ## *****w (weights): 1.000000 ... 1.000000
 ## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
 ## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
@@ -697,100 +840,35 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## number of x columns: 6
 ## from x,np,p: 6, 775
 ## ***using serial code
-## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 1
-## x1,x[n*p]: -1.961708, 0.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.230404
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 1s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 225, 6, 0
-## y1,yn: -2.839713, 0.625465
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.525347
-## *****sigma: 1.642247
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 3s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
 ## *****In main of C++ for bart prediction
 ## tc (threadcount): 1
 ## number of bart draws: 1000
 ## number of trees in bart sum: 50
 ## number of x columns: 4
-## from x,np,p: 4, 775
+## from x,np,p: 4, 225
 ## ***using serial code
 ## *****In main of C++ for bart prediction
 ## tc (threadcount): 1
 ## number of bart draws: 1000
 ## number of trees in bart sum: 200
 ## number of x columns: 6
-## from x,np,p: 6, 775
+## from x,np,p: 6, 225
 ## ***using serial code
 ## *****In main of C++ for bart prediction
 ## tc (threadcount): 1
 ## number of bart draws: 1000
 ## number of trees in bart sum: 200
 ## number of x columns: 6
-## from x,np,p: 6, 775
+## from x,np,p: 6, 225
 ## ***using serial code</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">print</span>(pehe_results)</a></code></pre></div>
-<pre><code>## $random
-## [1] 0.2161213
-## 
-## $variance
-## [1] 0.215546
-## 
-## $`type-s`
-## [1] 0.2768631
-## 
-## $emcite
-## [1] 0.1259506</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">res &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(results)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">res[, selection<span class="op">:</span><span class="er">=</span><span class="kw">names</span>(selections)]</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw">print</span>(res)</a></code></pre></div>
+<pre><code>##    pehe_sampling pehe_rollout regret_sampling regret_rollout selection
+## 1:     0.2252147    0.2161213        315.5079       2.937177    random
+## 2:     0.2014830    0.2155460        320.9954       4.031443  variance
+## 3:     0.2719396    0.2768631        266.6619       2.301397    type-s
+## 4:     0.1590750    0.1253461        301.3827       3.245835    emcite</code></pre>
 </div>
 
 

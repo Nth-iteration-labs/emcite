@@ -216,10 +216,25 @@ af <- function(data, tau_train, tau_test, theta, n2,
 #'
 #' @param data data that contains the sampling phase
 #' @export
-retrain_pehe <- function(data){
+retrain_and_metrics <- function(data){
   m.new <- train_model(data[["sampling"]])
   tau.preds <- predict_ite(data[["rollout"]], m.new)
-  pehe <- mean((data[["rollout"]][['tau']] -apply(tau.preds$tau,2,mean))^2)
-  pehe
+  tau.train.preds <- predict_ite(data[["sampling"]], m.new)
+  optimal.y.train <- ifelse(data[["sampling"]][['tau']] > 0,
+                            data[["sampling"]][['y1']],
+                            data[["sampling"]][['y0']])
+  optimal.y.test  <- ifelse(data[["rollout"]][['tau']] > 0,
+                            data[["rollout"]][['y1']],
+                            data[["rollout"]][['y0']])
+  regret.train <- sum(optimal.y.train - data[["sampling"]][['yobs']])
+  regret.test  <- sum(optimal.y.test - ifelse(apply(tau.preds$tau,2,mean)>0,
+                                              data[["rollout"]][['y1']],
+                                              data[["rollout"]][['y0']]))
+  pehe.train   <-  mean((data[["sampling"]][['tau']] - apply(tau.train.preds$tau,2,mean))^2)
+  pehe.test    <- mean((data[["rollout"]][['tau']] - apply(tau.preds$tau,2,mean))^2)
+  return(data.table(pehe_sampling   = pehe.train,
+                    pehe_rollout    = pehe.test,
+                    regret_sampling = regret.train,
+                    regret_rollout  = regret.test))
 }
 #'

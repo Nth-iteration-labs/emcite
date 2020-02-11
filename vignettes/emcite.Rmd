@@ -43,11 +43,10 @@ selections <-
       weight_types = 5
     ), simplify = F, USE.NAMES = T)
 
-test <- sampling_data(s.td, selections[[1]])
-
-pehe_results <- sapply(selections, function(x) retrain_pehe(sampling_data(s.td, x)),
+results <- sapply(selections, function(x) retrain_and_metrics(sampling_data(s.td, x)),
                        simplify = F, USE.NAMES = T)
-
-print(pehe_results)
+res <- rbindlist(results)
+res[, selection:=names(selections)]
+print(res)
 ```
 
