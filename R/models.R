@@ -220,13 +220,17 @@ retrain_and_metrics <- function(data){
   m.new <- train_model(data[["sampling"]])
   tau.preds <- predict_ite(data[["rollout"]], m.new)
   tau.train.preds <- predict_ite(data[["sampling"]], m.new)
+  optimal.y.experimentation <- ifelse(data[["experimentation"]][['tau']] > 0,
+                                      data[["experimentation"]][['y1']],
+                                      data[["experimentation"]][['y0']])
   optimal.y.train <- ifelse(data[["sampling"]][['tau']] > 0,
                             data[["sampling"]][['y1']],
                             data[["sampling"]][['y0']])
   optimal.y.test  <- ifelse(data[["rollout"]][['tau']] > 0,
                             data[["rollout"]][['y1']],
                             data[["rollout"]][['y0']])
-  regret.train <- sum(optimal.y.train - data[["sampling"]][['yobs']])
+  regret.train <- sum(optimal.y.train - data[["sampling"]][['yobs']]) - sum(optimal.y.experimentation-
+                                                                              data[["experimentation"]][["yobs"]])
   regret.test  <- sum(optimal.y.test - ifelse(apply(tau.preds$tau,2,mean)>0,
                                               data[["rollout"]][['y1']],
                                               data[["rollout"]][['y0']]))

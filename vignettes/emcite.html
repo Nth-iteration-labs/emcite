@@ -354,7 +354,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 0s
+## time: 1s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -385,7 +385,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 3s
+## time: 2s
 ## check counts
 ## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">tau.train.preds &lt;-<span class="st"> </span><span class="kw">predict_ite</span>(s.td[[<span class="st">&quot;experimentation&quot;</span>]], m1)</a></code></pre></div>
@@ -476,7 +476,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 1s
+## time: 0s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -507,7 +507,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 3s
+## time: 4s
 ## check counts
 ## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
 ## *****In main of C++ for bart prediction
@@ -579,7 +579,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 0s
+## time: 1s
 ## check counts
 ## trcnt,tecnt: 1000,0
 ## *****Into main of wbart
@@ -713,7 +713,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 4s
+## time: 3s
 ## check counts
 ## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
 ## *****In main of C++ for bart prediction
@@ -761,13 +761,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## *****Into main of pbart
 ## *****Data:
 ## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 0
-## x1,x[n*p]: -1.961708, 0.000000
+## y1,yn: 1, 1
+## x1,x[n*p]: -1.961708, 1.000000
 ## *****Number of Trees: 50
 ## *****Number of Cut Points: 100 ... 1
 ## *****burn and ndpost: 100, 1000
 ## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.241860
+## *****binaryOffset: -0.196212
 ## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
 ## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
 ## *****printevery: 100
@@ -791,13 +791,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## *****Into main of wbart
 ## *****Data:
 ## data:n,p,np: 225, 6, 0
-## y1,yn: -2.902798, 0.337143
-## x1,x[n*p]: -1.961708, 0.000000
+## y1,yn: -2.844742, -6.742576
+## x1,x[n*p]: -1.961708, 1.000000
 ## *****Number of Trees: 200
 ## *****Number of Cut Points: 100 ... 1
 ## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.516646
-## *****sigma: 1.628590
+## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.531039
+## *****sigma: 1.651119
 ## *****w (weights): 1.000000 ... 1.000000
 ## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
 ## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
@@ -816,7 +816,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## done 800 (out of 1100)
 ## done 900 (out of 1100)
 ## done 1000 (out of 1100)
-## time: 2s
+## time: 3s
 ## check counts
 ## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
 ## *****In main of C++ for bart prediction
@@ -865,10 +865,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb21-2" data-line-number="2">res[, selection<span class="op">:</span><span class="er">=</span><span class="kw">names</span>(selections)]</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw">print</span>(res)</a></code></pre></div>
 <pre><code>##    pehe_sampling pehe_rollout regret_sampling regret_rollout selection
-## 1:     0.2252147    0.2161213        315.5079       2.937177    random
-## 2:     0.2014830    0.2155460        320.9954       4.031443  variance
-## 3:     0.2719396    0.2768631        266.6619       2.301397    type-s
-## 4:     0.1590750    0.1253461        301.3827       3.245835    emcite</code></pre>
+## 1:     0.2252147    0.2161213       53.022040       2.937177    random
+## 2:     0.2014830    0.2155460       58.509539       4.031443  variance
+## 3:     0.2719396    0.2768631        4.176092       2.301397    type-s
+## 4:     0.1417516    0.1080235       53.122216       1.497595    emcite</code></pre>
 </div>
 
 
