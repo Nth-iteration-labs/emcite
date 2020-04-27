@@ -22,7 +22,9 @@ train_model <- function(data){
     }
     # possibility to add external propensity score
     if (!is.null(data$prop_scores)){
-      est_ps <- prop_scores
+      est_ps <- data$prop_scores
+    } else {
+
     }
     x <- cbind(x, est_ps, z)
     # Train normal model
@@ -86,16 +88,23 @@ predict_ite <- function(data, models){
 #'
 #' @return vector of weights
 #' @export
-fit_gradient_descent <- function(X, tau_predictions, weight_types) {
+fit_gradient_descent <- function(X, tau_predictions, weight_types, parallel=F, R=F) {
   # Calculate predicted Type-S error
   prob_of_mistake <- apply(tau_predictions,
                            2,
                            function(x)
                              weight_types * (ifelse(mean(x) > 0, sum(x < 0), sum(x > 0)) / length(x))) + 1
   tau_mean <- apply(tau_predictions, 2, mean)
-  df.tau.model <- cbind(1, X)
-  thetas <- sgd_py(X = df.tau.model, y = tau_mean, w = prob_of_mistake, theta=NULL)
-  return(thetas)
+  m.glm <- cv.glmnet(X, tau_mean, weights = prob_of_mistake)
+  thetas <- coef(m.glm, s = "lambda.min")
+  lambda.m1 <- m.glm$lambda.min
+  # df.tau.model <- cbind(1, X)
+  # if (!parallel){
+  #   thetas <- sgd_py(X = df.tau.model, y = tau_mean, w = prob_of_mistake, theta=NULL)
+  # } else {
+  #   thetas <- sgd_py2(X = df.tau.model, y = tau_mean, w = prob_of_mistake, theta=NULL)
+  # }
+  return(list(thetas=thetas, lambda=lambda.m1))
 }
 
 #' Run model in python
@@ -116,6 +125,24 @@ sgd_py <- function(X, y, w, theta=NULL){
   return(model$coef_)
 }
 
+sgd_py_p <- function(lista){
+  X <- lista[["X"]]
+  y <- lista[["y"]]
+  w <- lista[["w"]]
+  l1 <- lista[["lambda"]]
+  theta = lista[["theta"]]
+  # model = sk$linear_model$SGDRegressor()
+  if (is.null(theta)){
+    model$fit(X, y, sample_weight=w)
+  } else {
+    # original_weight = np$copy(theta)
+    # model$fit(X, y, sample_weight=w, coef_init=original_weight)
+    m.glm <- cv.glmnet(X, y, weights = w)
+    thetas <- coef(m.glm, s = l1)
+  }
+  return(thetas)
+}
+
 #' Acquisition function, selects $n_2$ units from the test set
 #'
 #' @param data list containing train and test covariates
@@ -132,7 +159,8 @@ sgd_py <- function(X, y, w, theta=NULL){
 af <- function(data, tau_train, tau_test, theta, n2,
                type="emcite",
                weight_types=5,
-               B=2){
+               B=2, parallel=F, lambda=NULL){
+  print(paste0("start of ", type))
   if (type=="random"){
     sel.vec <- sample(1:ncol(tau_test), n2)
   } else if (type=="variance"){
@@ -157,56 +185,117 @@ af <- function(data, tau_train, tau_test, theta, n2,
                                2,
                                function(x) weight_types*(ifelse(mean(x) > 0,
                                                                 sum(x<0), sum(x>0))/length(x))) + 1
-    X.model.train <- data.frame(cbind(1, X.train))
-    X.model <- data.frame(cbind(1, X.test))
-    names(X.model.train) <- names(X.model) <- paste0("X", c(1:ncol(X.model.train)))
+    #X.model.train <- data.frame(cbind(1, X.train))
+    #X.model <- data.frame(cbind(1, X.test))
+    #names(X.model.train) <- names(X.model) <- paste0("X", c(1:ncol(X.model.train)))
     sel.vec <- c()
     id <- 1:ncol(tau_test)
     # Create empty matrix for all the draws <- draw B row of simulation to get a bootstrap estimate
-    draws <- matrix(nrow=B, ncol=ncol(tau_test))
-    # Sample randomly 5
-    for (dr in 1:ncol(tau_test)){
-      draws[, dr] <- sample(tau_test[, dr], B)
+    if (B>1){
+      draws <- matrix(nrow=B, ncol=ncol(tau_test))
+      # Sample randomly 5
+      for (dr in 1:ncol(tau_test)){
+        draws[, dr] <- sample(tau_test[, dr], B)
+      }
+    } else {
+        draws <- c(rep(NA,ncol(tau_test)))
+      for (dr in 1:ncol(tau_test)){
+        draws[dr] <- sample(tau_test[, dr], 1)
+      }
     }
     # EMCITE, ALgorithm 1
+    print(n2)
     for (i in 1:n2){
       change <- list()
       # Gradients to update every time <- the one with the highest norm will be selected
       gradients <- list()
-      for (ix in 1:nrow(X.model)){
-        # Initialize vector to store the changes, mean of this will be the measurement
-        mean_change <- c()
-        for (simulation in c(1:B)){
-          # In Python, with automated function
-          new_theta <- sgd_py(X=rbind(X.model.train, X.model[ix, ]),
-                                   y=c(tau_train_mean, draws[simulation, ix]),
-                                   w=c(prob_of_mistake_train, prob_of_mistake[ix]),
-                                   theta = theta)
-          grad <- theta - new_theta
-          mean_change <- c(mean_change, sum(abs(grad)))
-          # Calculate mean of gradient to update weights
-          if (length(gradients) < ix){
-            gradients[[ix]] <- new_theta
-          } else {
-            gradients[[ix]] <- gradients[[ix]] + (new_theta-gradients[[ix]])/(simulation)
+      # if (ncol(tau_test) > 1000){
+      run.numbers <- sample(id, 100)
+      #} else {
+      #  run.numbers <- id
+      #}
+      # print(id[(length(id)-10):length(id)])
+      # print(run.numbers)
+      if (!parallel){
+        for (ix in seq_along(run.numbers)){
+          ix.no <- run.numbers[ix]
+          # Initialize vector to store the changes, mean of this will be the measurement
+          mean_change <- c()
+            for (simulation in c(1:B)){
+              sim.value <- ifelse(B>1, draws[simulation, ix.no],  draws[ix.no])
+              # In Python, with automated function
+              new_theta <- sgd_py(X=as.matrix(rbind(X.train, X.test[ix.no, ])),
+                                       y=c(tau_train_mean, sim.value),
+                                       w=c(prob_of_mistake_train, prob_of_mistake[ix.no]),
+                                       theta = theta)
+              # print(new_theta)
+              grad <- theta - new_theta
+              mean_change <- c(mean_change, sum(abs(grad)))
+              # Calculate mean of gradient to update weights
+              if (length(gradients) < ix){
+                gradients[[ix]] <- new_theta
+              } else {
+                gradients[[ix]] <- gradients[[ix]] + (new_theta-gradients[[ix]])/(simulation)
+              }
           }
+          change[[ix]] <- mean(mean_change)}
+          selected <- which(unlist(change)==max(unlist(change)))
+          if (length(selected) > 1){
+            selected <- sample(selected, 1)
+          }
+          tau_train_mean <- c(tau_train_mean, ifelse(B>1, mean(draws[, run.numbers[selected]]),
+                                                     draws[run.numbers[selected]]))
+          theta <- gradients[[selected]]
+          sel.vec <- c(sel.vec, run.numbers[selected])
+          X.train <- rbind(X.train,X.test[run.numbers[selected], ])
+          prob_of_mistake_train <- c(prob_of_mistake_train, prob_of_mistake[run.numbers[selected]])
+          # X.test <- X.test[-run.numbers[selected], ]
+          # tau_test <- tau_test[, -run.numbers[selected]]
+          # if (B>1){
+          #   draws <- draws[, -run.numbers[selected]]
+          # } else {draws <- draws[-run.numbers[selected]]}
+          id <- id[-run.numbers[selected]]
+        } else {
+        lista_to_p <- list()
+        list_res   <- list()
+        print(run.numbers)
+          for (ix in seq_along(run.numbers)){
+            ix.no <- run.numbers[ix]
+            # print(as.matrix(rbind(X.train,
+            #                      X.test[ix.no, ])))
+            for (simulation in 1:B){
+              lista_to_p[[paste0("ix_", ix.no, "_sim_",
+                                 simulation)]] <- list(X=as.matrix(rbind(X.train,
+                                                              X.test[ix.no, ])),
+                                                      y=c(tau_train_mean, ifelse(B>1,
+                                                          draws[simulation, ix.no],
+                                                          draws[ix.no])),
+                                                      w=c(prob_of_mistake_train,
+                                                          prob_of_mistake[ix.no]),
+                                                      theta = theta,
+                                                      lambda=lambda)
+            }
+          }
+        new_theta_l <- mclapply(lista_to_p, sgd_py_p, mc.cores=4)
+        test <- mclapply(new_theta_l, function(x) data.table(values=sum(abs(theta - x))),
+                         mc.cores = 4)
+
+        td <- data.table(names=names(test), rbindlist(test))
+        td[, c("ix", "sim") := tstrsplit(names, "_")[c(2,4)]]
+        selected <- as.integer(td[, .(mv = mean(values)), by=ix][order(-mv)][1, ix])
+
+        tau_train_mean <- c(tau_train_mean, ifelse(B>1, mean(draws[, selected]),
+                                                   draws[selected]))
+        # print(grep(paste0("ix_",selected, "_sim_"), names(new_theta_l)))
+        print(new_theta_l[grepl(paste0("ix_",selected, "_sim_"), names(new_theta_l))])
+        theta <- colMeans(rbindlist(lapply(new_theta_l[grepl(paste0("ix_",selected, "_sim_"), names(new_theta_l))],
+               function(x) data.table(t(as.matrix(x))))))
+        sel.vec <- c(sel.vec, selected)
+        X.train <- rbind(X.train,X.test[selected, ])
+        prob_of_mistake_train <- c(prob_of_mistake_train, prob_of_mistake[selected])
+        id <- id[-selected]
         }
-        change[[ix]] <- mean(mean_change)
-      }
-      selected <- which(unlist(change)==max(unlist(change)))
-      if (length(selected) > 1){
-        selected <- sample(selected, 1)
-      }
-      tau_train_mean <- c(tau_train_mean, mean(draws[, selected]))
-      theta <- gradients[[selected]]
-      sel.vec <- c(sel.vec, id[selected])
-      X.model.train <- rbind(X.model.train,X.model[selected, ])
-      prob_of_mistake_train <- c(prob_of_mistake_train, prob_of_mistake[selected])
-      X.model <- X.model[-selected, ]
-      tau_test <- tau_test[, -selected]
-      draws <- draws[, -selected]
-      id <- id[-selected]
-      prob_of_mistake <- prob_of_mistake[-selected]
+      # prob_of_mistake <- prob_of_mistake[-run.numbers[selected]]
     }
   }
   return(sel.vec)
@@ -220,25 +309,36 @@ retrain_and_metrics <- function(data){
   m.new <- train_model(data[["sampling"]])
   tau.preds <- predict_ite(data[["rollout"]], m.new)
   tau.train.preds <- predict_ite(data[["sampling"]], m.new)
-  optimal.y.experimentation <- ifelse(data[["experimentation"]][['tau']] > 0,
-                                      data[["experimentation"]][['y1']],
-                                      data[["experimentation"]][['y0']])
-  optimal.y.train <- ifelse(data[["sampling"]][['tau']] > 0,
-                            data[["sampling"]][['y1']],
-                            data[["sampling"]][['y0']])
-  optimal.y.test  <- ifelse(data[["rollout"]][['tau']] > 0,
-                            data[["rollout"]][['y1']],
-                            data[["rollout"]][['y0']])
-  regret.train <- sum(optimal.y.train - data[["sampling"]][['yobs']]) - sum(optimal.y.experimentation-
-                                                                              data[["experimentation"]][["yobs"]])
-  regret.test  <- sum(optimal.y.test - ifelse(apply(tau.preds$tau,2,mean)>0,
-                                              data[["rollout"]][['y1']],
-                                              data[["rollout"]][['y0']]))
-  pehe.train   <-  mean((data[["sampling"]][['tau']] - apply(tau.train.preds$tau,2,mean))^2)
-  pehe.test    <- mean((data[["rollout"]][['tau']] - apply(tau.preds$tau,2,mean))^2)
-  return(data.table(pehe_sampling   = pehe.train,
-                    pehe_rollout    = pehe.test,
-                    regret_sampling = regret.train,
-                    regret_rollout  = regret.test))
+  if (any(!is.na(data[["rollout"]][["y1"]]))){
+    optimal.y.experimentation <- ifelse(data[["experimentation"]][['tau']] > 0,
+                                        data[["experimentation"]][['y1']],
+                                        data[["experimentation"]][['y0']])
+    optimal.y.train <- ifelse(data[["sampling"]][['tau']] > 0,
+                              data[["sampling"]][['y1']],
+                              data[["sampling"]][['y0']])
+    optimal.y.test  <- ifelse(data[["rollout"]][['tau']] > 0,
+                              data[["rollout"]][['y1']],
+                              data[["rollout"]][['y0']])
+    regret.train <- sum(optimal.y.train - data[["sampling"]][['yobs']]) - sum(optimal.y.experimentation-
+                                                                                data[["experimentation"]][["yobs"]])
+    regret.test  <- sum(optimal.y.test - ifelse(apply(tau.preds$tau,2,mean)>0,
+                                                data[["rollout"]][['y1']],
+                                                data[["rollout"]][['y0']]))
+    pehe.train   <-  mean((data[["sampling"]][['tau']] - apply(tau.train.preds$tau,2,mean))^2)
+    pehe.test    <- mean((data[["rollout"]][['tau']] - apply(tau.preds$tau,2,mean))^2)
+    return(data.table(pehe_sampling   = pehe.train,
+                      pehe_rollout    = pehe.test,
+                      regret_sampling = regret.train,
+                      regret_rollout  = regret.test))
+  } else {
+    predictions <- apply(tau.preds$tau, 2 , mean)
+    perf <- performance(apply(tau.preds$y1, 2, mean),
+                        apply(tau.preds$y0, 2, mean),
+                        data[["rollout"]][["yobs"]],
+                        data[["rollout"]][["z"]],
+                        direction=1
+    )
+    return(perf)
+  }
 }
 #'

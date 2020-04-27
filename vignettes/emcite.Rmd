@@ -42,8 +42,18 @@ selections <-
       type = x,
       weight_types = 5
     ), simplify = F, USE.NAMES = T)
-
-results <- sapply(selections, function(x) retrain_and_metrics(sampling_data(s.td, x)),
+# With assignment function "turned on"
+results <- sapply(selections,
+                  function(x)
+                    retrain_and_metrics(
+                      sampling_data(
+                        s.td,
+                        x,
+                        active = T,
+                        train_predictions = tau.train.preds,
+                        test_predictions   = tau.test.preds
+                      )
+                    ), 
                        simplify = F, USE.NAMES = T)
 res <- rbindlist(results)
 res[, selection:=names(selections)]

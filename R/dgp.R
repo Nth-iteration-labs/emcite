@@ -7,10 +7,25 @@
 #' @export
 
 dgp <- function(lista){
+  if (lista$real){
+    X <- lista$X
+    yobs <- lista$y
+    z <- lista$z
+    lista$covariate <- lista$y_mean <- lista$ite <- ""
+    y0 <- y1 <- tau <- NA
+    return(list(
+      "X" = X,
+      "z" = z,
+      "y0" = y0,
+      "y1" = y0 + tau,
+      "yobs" = yobs,
+      "tau" = tau
+    ))
+  }
   if (!is.list(lista) & is.null(lista)){
     stop("dgp requires a list of setup.")
   }
-  if (!any(c("N", "covariate", "p", "y_mean", "ite")  %in% names(lista))){
+  if (!any(c("N", "covariate", "p", "y_mean", "ite")  %in% names(lista)) | lista$real!=T){
     stop("A setup condition is missing")
   }
   N <- lista[['N']]
@@ -18,17 +33,21 @@ dgp <- function(lista){
   p <- lista[['p']]
   y_mean <- lista[['y_mean']]
   ite <- lista[['ite']]
-  if (!is.numeric(lista[["N"]]) | !is.numeric(lista[["p"]])){
-    stop("N/p should be a number")
-  }
-  if (!any(c("linear", "linear_normal", "zaidi_lower", "zaidi", "lu") %in% lista[["covariate"]])){
-    stop("covariate should be one of the following: linear, linear_normal, zaidi_lower, zaidi, lu")
-  }
-  if (!any(c("linear", "zero", "zaidi_lower", "zaidi", "lu") %in% lista[["y_mean"]])){
-    stop("y_mean should be one of the following: linear, zero, zaidi_lower, zaidi, lu")
-  }
-  if (!any(c("linear", "zero", "square", "athey", "lu", "sin") %in% lista[["ite"]])){
-    stop("y_mean should be one of the following: linear, zero, square, athey, lu, sin")
+  if (!lista$real){
+    if (!is.numeric(lista[["N"]]) | !is.numeric(lista[["p"]])){
+      stop("N/p should be a number")
+    }
+    if ((!any(c("linear", "linear_normal",
+                "zaidi_lower", "zaidi",
+                "lu") %in% lista[["covariate"]]))){
+      stop("covariate should be one of the following: linear, linear_normal, zaidi_lower, zaidi, lu")
+    }
+    if (!any(c("linear", "zero", "zaidi_lower", "zaidi", "lu") %in% lista[["y_mean"]])){
+      stop("y_mean should be one of the following: linear, zero, zaidi_lower, zaidi, lu")
+    }
+    if (!any(c("linear", "zero", "square", "athey", "lu", "sin") %in% lista[["ite"]])){
+      stop("y_mean should be one of the following: linear, zero, square, athey, lu, sin")
+    }
   }
   #### X ####
   if (covariate == "linear"){
@@ -105,15 +124,25 @@ dgp <- function(lista){
 #' @param data data to split to experiment-roll-out
 #' @param n1 number of units in experimentation phase
 #' @export
-split_data <- function(data, n1){
+split_data <- function(data, n1, random = T, real=F){
   X <-   data[["X"]]
   y <-   data[["yobs"]]
   z <-   data[["z"]]
-  y0 <-  data[["y0"]]
-  y1 <-  data[["y1"]]
-  tau <- data[["tau"]]
   N <- nrow(data["X"])
-  ix <- sample(1:nrow(X), n1)
+  if (real){
+    y0 <-  NA
+    y1 <-  NA
+    tau <- NA
+  } else {
+    y0 <-  data[["y0"]]
+    y1 <-  data[["y1"]]
+    tau <- data[["tau"]]
+  }
+  if (random){
+    ix <- sample(1:nrow(X), n1)
+  } else {
+    ix <- c(1:n1)
+  }
   X.train <- as.matrix(X[ix,], ncol=ncol(X))
   z.train <- z[ix]
   y.train <- y[ix]
@@ -148,19 +177,51 @@ split_data <- function(data, n1){
 #' @param indexes indexes to move from rollout to sampling
 #' @export
 
-sampling_data <- function(data, indexes){
-  data[["sampling"]][["X"]] <- rbind(data[["experimentation"]][["X"]],
-                                     data[["rollout"]][["X"]][indexes,])
-  data[["sampling"]][["yobs"]] <- c(data[["experimentation"]][["yobs"]],
-                                    data[["rollout"]][["yobs"]][indexes])
-  data[["sampling"]][["z"]] <- c(data[["experimentation"]][["z"]],
-                                 data[["rollout"]][["z"]][indexes])
-  data[["sampling"]][["y1"]] <- c(data[["experimentation"]][["y1"]],
-                                  data[["rollout"]][["y1"]][indexes])
-  data[["sampling"]][["y0"]] <- c(data[["experimentation"]][["y0"]],
-                                  data[["rollout"]][["y0"]][indexes])
-  data[["sampling"]][["tau"]] <- c(data[["experimentation"]][["tau"]],
-                                   data[["rollout"]][["tau"]][indexes])
+sampling_data <- function(data, indexes, active=F, train_predictions=NULL, test_predictions=NULL){
+  # Real world scenario
+  if (any(is.na(data[["experimentation"]][["y1"]])) & active){
+    y1.var <- apply(test_predictions$y1, 2, var)[indexes]
+    y0.var <- apply(test_predictions$y0, 2, var)[indexes]
+    assigned.treatment <- rbinom(length(indexes), 1, y1.var/(y1.var+y0.var))
+    matching.treatment <- data[["rollout"]][["z"]][indexes] == assigned.treatment
+    indexes.matching <- indexes[matching.treatment]
+    data[["sampling"]][["yobs"]] <- c(data[["experimentation"]][["yobs"]],
+                                      data[["rollout"]][["yobs"]][indexes.matching])
+    data[["sampling"]][["prop_scores"]] <- c(train_predictions[["train.ps"]],
+                                             (y1.var/(y1.var+y0.var))[indexes.matching])
+    data[["sampling"]][["X"]] <- rbind(data[["experimentation"]][["X"]],
+                                       data[["rollout"]][["X"]][indexes.matching,])
+    data[["sampling"]][["z"]] <- c(data[["experimentation"]][["z"]],
+                                   data[["rollout"]][["z"]][indexes.matching])
+  } else {
+    data[["sampling"]][["X"]] <- rbind(data[["experimentation"]][["X"]],
+                                       data[["rollout"]][["X"]][indexes,])
+    data[["sampling"]][["y1"]] <- c(data[["experimentation"]][["y1"]],
+                                    data[["rollout"]][["y1"]][indexes])
+    data[["sampling"]][["y0"]] <- c(data[["experimentation"]][["y0"]],
+                                    data[["rollout"]][["y0"]][indexes])
+    data[["sampling"]][["tau"]] <- c(data[["experimentation"]][["tau"]],
+                                     data[["rollout"]][["tau"]][indexes])
+  }
+  # Assignment function
+  if (!active){
+    data[["sampling"]][["yobs"]] <- c(data[["experimentation"]][["yobs"]],
+                                      data[["rollout"]][["yobs"]][indexes])
+    data[["sampling"]][["z"]] <- c(data[["experimentation"]][["z"]],
+                                   data[["rollout"]][["z"]][indexes])
+  } else if (active & any(!is.na(data[["experimentation"]][["y1"]]))) {
+    y1.var <- apply(test_predictions$y1, 2, var)[indexes]
+    y0.var <- apply(test_predictions$y0, 2, var)[indexes]
+    assigned.treatment <- rbinom(length(indexes), 1, y1.var/(y1.var+y0.var))
+    data[["sampling"]][["z"]] <- c(data[["experimentation"]][["z"]],
+                                   assigned.treatment)
+    data[["sampling"]][["yobs"]] <- c(data[["experimentation"]][["yobs"]],
+                                      ifelse(assigned.treatment == 1,
+                                             data[["rollout"]][["y1"]][indexes],
+                                             data[["rollout"]][["y0"]][indexes]))
+    # Predicted
+    data[["sampling"]][["prop_scores"]] <- c(train_predictions[["train.ps"]], y1.var/(y1.var+y0.var))
+  }
   data[["rollout"]][["X"]] <- data[["rollout"]][["X"]][-indexes,]
   data[["rollout"]][["yobs"]] <- data[["rollout"]][["yobs"]][-indexes]
   data[["rollout"]][["z"]] <- data[["rollout"]][["z"]][-indexes]
