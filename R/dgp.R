@@ -25,7 +25,7 @@ dgp <- function(lista){
   if (!is.list(lista) & is.null(lista)){
     stop("dgp requires a list of setup.")
   }
-  if (!any(c("N", "covariate", "p", "y_mean", "ite")  %in% names(lista)) | lista$real!=T){
+  if (!any(c("N", "covariate", "p", "y_mean", "ite")  %in% names(lista)) & lista$real==F){
     stop("A setup condition is missing")
   }
   N <- lista[['N']]
@@ -228,6 +228,7 @@ sampling_data <- function(data, indexes, active=F, train_predictions=NULL, test_
   data[["rollout"]][["tau"]] <- data[["rollout"]][["tau"]][-indexes]
   data[["rollout"]][["y1"]] <- data[["rollout"]][["y1"]][-indexes]
   data[["rollout"]][["y0"]] <- data[["rollout"]][["y0"]][-indexes]
+  data[["active"]] <- active
   return(data)
 }
 

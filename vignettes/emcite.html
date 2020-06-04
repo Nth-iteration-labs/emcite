@@ -301,574 +301,126 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
+<div id="the-dgps-for-figure-1-in-the-paper" class="section level2">
+<h2>The DGPs for Figure 1 in the paper:</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Title of graph</th>
+<th><span class="math inline">\(X\)</span></th>
+<th><span class="math inline">\(Y(0)\)</span></th>
+<th><span class="math inline">\(\tau\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Y:Linear, ITE:Linear</td>
+<td>Linear</td>
+<td>Linear</td>
+<td>Linear</td>
+</tr>
+<tr class="even">
+<td>Y:Linear, ITE:Sin</td>
+<td>Linear</td>
+<td>Linear</td>
+<td>Sin</td>
+</tr>
+<tr class="odd">
+<td>Y:Linear, ITE:Square</td>
+<td>Linear</td>
+<td>Linear</td>
+<td>Square</td>
+</tr>
+<tr class="even">
+<td>Y:Linear, ITE:Square, p=10</td>
+<td>Linear, with 10 covariates</td>
+<td>Linear</td>
+<td>Square</td>
+</tr>
+<tr class="odd">
+<td>Y:Sundin, ITE: Linear</td>
+<td>Linear</td>
+<td>Sundin</td>
+<td>Linear</td>
+</tr>
+<tr class="even">
+<td>Y:Sundin, ITE:Square</td>
+<td>Linear</td>
+<td>Sundin</td>
+<td>Square</td>
+</tr>
+<tr class="odd">
+<td>Y:Zaidi Higher, ITE: Athey</td>
+<td>Zaidi Higher</td>
+<td>Zaidi Lower</td>
+<td>Athey</td>
+</tr>
+<tr class="even">
+<td>Y:Zaidi Lower, ITE: Athey</td>
+<td>Zaidi Lower</td>
+<td>Zaidi Lower</td>
+<td>Athey</td>
+</tr>
+<tr class="odd">
+<td>Y:Lu, ITE: Lu</td>
+<td>Lu</td>
+<td>Lu</td>
+<td>Lu</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="package-implementation-of-emcite-algorithm" class="section level2">
 <h2>Package implementation of EMCITE algorithm</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Set up python</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">123</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(emcite)</a></code></pre></div>
-<pre><code>## Loading required package: data.table</code></pre>
-<pre><code>## Loading required package: BART</code></pre>
-<pre><code>## Loading required package: nlme</code></pre>
-<pre><code>## Loading required package: nnet</code></pre>
-<pre><code>## Loading required package: survival</code></pre>
-<pre><code>## Loading required package: sgd</code></pre>
-<pre><code>## Loading required package: purrr</code></pre>
-<pre><code>## 
-## Attaching package: 'purrr'</code></pre>
-<pre><code>## The following object is masked from 'package:data.table':
-## 
-##     transpose</code></pre>
-<pre><code>## Loading required package: parallel</code></pre>
-<pre><code>## Loading required package: reticulate</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">use_python</span>(<span class="st">&quot;/opt/anaconda3/bin/python&quot;</span>)</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">N &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">n1 &lt;-<span class="st"> </span><span class="dv">200</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">n2 &lt;-<span class="st"> </span><span class="dv">25</span></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">td &lt;-<span class="st"> </span><span class="kw">dgp</span>(<span class="kw">list</span>(<span class="st">&quot;N&quot;</span>=N,<span class="st">&quot;p&quot;</span>=<span class="dv">4</span>, <span class="st">&quot;covariate&quot;</span>=<span class="st">&quot;linear&quot;</span>, <span class="st">&quot;y_mean&quot;</span>=<span class="st">&quot;linear&quot;</span>, <span class="st">&quot;ite&quot;</span>=<span class="st">&quot;linear&quot;</span>))</a>
-<a class="sourceLine" id="cb13-6" data-line-number="6">s.td &lt;-<span class="st"> </span><span class="kw">split_data</span>(td, <span class="dt">n1=</span>n1)</a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">m1 &lt;-<span class="st"> </span><span class="kw">train_model</span>(s.td[[<span class="st">&quot;experimentation&quot;</span>]])</a></code></pre></div>
-<pre><code>## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 200, 4, 0
-## y1,yn: 1, 0
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.227545
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 1s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 200, 6, 0
-## y1,yn: -2.849700, 0.518265
-## x1,x[n*p]: -1.961708, 0.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.430744
-## *****sigma: 1.487046
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 2s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">tau.train.preds &lt;-<span class="st"> </span><span class="kw">predict_ite</span>(s.td[[<span class="st">&quot;experimentation&quot;</span>]], m1)</a></code></pre></div>
-<pre><code>## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 200
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 200
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 200
-## ***using serial code</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">tau.test.preds  &lt;-<span class="st"> </span><span class="kw">predict_ite</span>(s.td[[<span class="st">&quot;rollout&quot;</span>]], m1)</a></code></pre></div>
-<pre><code>## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 800
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 800
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 800
-## ***using serial code</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">thetas &lt;-<span class="st"> </span><span class="kw">fit_gradient_descent</span>(<span class="dt">X=</span>s.td[[<span class="st">&quot;experimentation&quot;</span>]][[<span class="st">&quot;X&quot;</span>]],</a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">                               <span class="dt">tau_predictions=</span>tau.train.preds<span class="op">$</span>tau, </a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">                               <span class="dt">weight_types =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">selections &lt;-</a>
-<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="st">  </span><span class="kw">sapply</span>(<span class="kw">c</span>(<span class="st">&quot;random&quot;</span>, <span class="st">&quot;variance&quot;</span>, <span class="st">&quot;type-s&quot;</span>, <span class="st">&quot;emcite&quot;</span>), <span class="cf">function</span>(x)</a>
-<a class="sourceLine" id="cb19-6" data-line-number="6">    <span class="kw">af</span>(</a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">      s.td,</a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">      <span class="dt">tau_train =</span> tau.train.preds<span class="op">$</span>tau,</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">      <span class="dt">tau_test =</span> tau.test.preds<span class="op">$</span>tau,</a>
-<a class="sourceLine" id="cb19-10" data-line-number="10">      <span class="dt">theta =</span> thetas,</a>
-<a class="sourceLine" id="cb19-11" data-line-number="11">      <span class="dt">n2 =</span> n2,</a>
-<a class="sourceLine" id="cb19-12" data-line-number="12">      <span class="dt">type =</span> x,</a>
-<a class="sourceLine" id="cb19-13" data-line-number="13">      <span class="dt">weight_types =</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb19-14" data-line-number="14">    ), <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a>
-<a class="sourceLine" id="cb19-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb19-16" data-line-number="16">results &lt;-<span class="st"> </span><span class="kw">sapply</span>(selections, <span class="cf">function</span>(x) <span class="kw">retrain_and_metrics</span>(<span class="kw">sampling_data</span>(s.td, x)),</a>
-<a class="sourceLine" id="cb19-17" data-line-number="17">                       <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a></code></pre></div>
-<pre><code>## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 0
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.207582
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 0s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 225, 6, 0
-## y1,yn: -2.786206, -0.276566
-## x1,x[n*p]: -1.961708, 0.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.425990
-## *****sigma: 1.478818
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 4s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 1
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.173546
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 1s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 225, 6, 0
-## y1,yn: -2.745240, -4.514544
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.456762
-## *****sigma: 1.531299
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 3s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 0
-## x1,x[n*p]: -1.961708, 0.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.196212
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 0s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 225, 6, 0
-## y1,yn: -2.932540, 1.888432
-## x1,x[n*p]: -1.961708, 0.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.425719
-## *****sigma: 1.478347
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 3s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 225, 4, 0
-## y1,yn: 1, 1
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.196212
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,4,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 1s
-## check counts
-## trcnt,tecnt: 1000,0
-## *****Into main of wbart
-## *****Data:
-## data:n,p,np: 225, 6, 0
-## y1,yn: -2.844742, -6.742576
-## x1,x[n*p]: -1.961708, 1.000000
-## *****Number of Trees: 200
-## *****Number of Cut Points: 100 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:beta,alpha,tau,nu,lambda: 2.000000,0.950000,0.284099,3.000000,0.531039
-## *****sigma: 1.651119
-## *****w (weights): 1.000000 ... 1.000000
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,6,0
-## *****nkeeptrain,nkeeptest,nkeeptestme,nkeeptreedraws: 1000,1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skipteme,skiptreedraws: 1,1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 3s
-## check counts
-## trcnt,tecnt,temecnt,treedrawscnt: 1000,0,0,1000
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 775
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 50
-## number of x columns: 4
-## from x,np,p: 4, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code
-## *****In main of C++ for bart prediction
-## tc (threadcount): 1
-## number of bart draws: 1000
-## number of trees in bart sum: 200
-## number of x columns: 6
-## from x,np,p: 6, 225
-## ***using serial code</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">res &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(results)</a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">res[, selection<span class="op">:</span><span class="er">=</span><span class="kw">names</span>(selections)]</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw">print</span>(res)</a></code></pre></div>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(emcite)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">use_python</span>(<span class="st">&quot;/opt/anaconda3/bin/python&quot;</span>)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">N &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">n1 &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">n2 &lt;-<span class="st"> </span><span class="dv">25</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">td &lt;-<span class="st"> </span><span class="kw">dgp</span>(<span class="kw">list</span>(<span class="st">&quot;N&quot;</span>=N,<span class="st">&quot;p&quot;</span>=<span class="dv">4</span>, <span class="st">&quot;covariate&quot;</span>=<span class="st">&quot;linear&quot;</span>, <span class="st">&quot;y_mean&quot;</span>=<span class="st">&quot;linear&quot;</span>, <span class="st">&quot;ite&quot;</span>=<span class="st">&quot;linear&quot;</span>, <span class="st">&quot;real&quot;</span>=F))</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">s.td &lt;-<span class="st"> </span><span class="kw">split_data</span>(td, <span class="dt">n1=</span>n1)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">m1 &lt;-<span class="st"> </span><span class="kw">train_model</span>(s.td[[<span class="st">&quot;experimentation&quot;</span>]])</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">tau.train.preds &lt;-<span class="st"> </span><span class="kw">predict_ite</span>(s.td[[<span class="st">&quot;experimentation&quot;</span>]], m1)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">tau.test.preds  &lt;-<span class="st"> </span><span class="kw">predict_ite</span>(s.td[[<span class="st">&quot;rollout&quot;</span>]], m1)</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">thetas &lt;-<span class="st"> </span><span class="kw">fit_gradient_descent</span>(<span class="dt">X=</span>s.td[[<span class="st">&quot;experimentation&quot;</span>]][[<span class="st">&quot;X&quot;</span>]],</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">                               <span class="dt">tau_predictions=</span>tau.train.preds<span class="op">$</span>tau, </a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">                               <span class="dt">weight_types =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">selections &lt;-</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="st">  </span><span class="kw">sapply</span>(<span class="kw">c</span>(<span class="st">&quot;random&quot;</span>, <span class="st">&quot;variance&quot;</span>, <span class="st">&quot;type-s&quot;</span>, <span class="st">&quot;emcite&quot;</span>), <span class="cf">function</span>(x)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">    <span class="kw">af</span>(</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">      s.td,</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">      <span class="dt">tau_train =</span> tau.train.preds<span class="op">$</span>tau,</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">      <span class="dt">tau_test =</span> tau.test.preds<span class="op">$</span>tau,</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">      <span class="dt">theta =</span> thetas,</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">      <span class="dt">n2 =</span> n2,</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">      <span class="dt">type =</span> x,</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">      <span class="dt">weight_types =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">      <span class="dt">parallel =</span> F,<span class="dt">R=</span>F</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">    ), <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># With assignment function &quot;turned on&quot;</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">results &lt;-<span class="st"> </span><span class="kw">sapply</span>(selections,</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">                  <span class="cf">function</span>(x)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">                    <span class="kw">retrain_and_metrics</span>(</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">                      <span class="kw">sampling_data</span>(</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">                        s.td,</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">                        x,</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">                        <span class="dt">active =</span> T,</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">                        <span class="dt">train_predictions =</span> tau.train.preds,</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">                        <span class="dt">test_predictions   =</span> tau.test.preds</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">                      )</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">                    ), </a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">                       <span class="dt">simplify =</span> F, <span class="dt">USE.NAMES =</span> T)</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">res &lt;-<span class="st"> </span><span class="kw">rbindlist</span>(results)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">res[, selection<span class="op">:</span><span class="er">=</span><span class="kw">names</span>(selections)]</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">print</span>(res)</a></code></pre></div>
 <pre><code>##    pehe_sampling pehe_rollout regret_sampling regret_rollout selection
-## 1:     0.2252147    0.2161213       53.022040       2.937177    random
-## 2:     0.2014830    0.2155460       58.509539       4.031443  variance
-## 3:     0.2719396    0.2768631        4.176092       2.301397    type-s
-## 4:     0.1417516    0.1080235       53.122216       1.497595    emcite</code></pre>
+## 1:     0.1988246    0.1738516       60.935284       4.453928    random
+## 2:     0.1850394    0.1992023       95.815085       3.173348  variance
+## 3:     0.2074852    0.2011035        6.668371       1.840773    type-s
+## 4:     0.1939804    0.1562409       83.759857       5.402215    emcite</code></pre>
 </div>
 
 
