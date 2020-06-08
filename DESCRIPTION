@@ -6,8 +6,8 @@ Authors@R:
            family = "Anon",
            email = "anon.anon@example.com",
                   role = c("aut", "cre"))
-Description: Implementation for EMCITE algorithm in Batch Mode Active
-    Learning for Individual Treatment Effect Estimation submitted for KDD'20.
+Description: Implementation for B-EMCITE algorithm in Batch Mode Active
+    Learning for Individual Treatment Effect Estimation submitted for ICDM'20.
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
