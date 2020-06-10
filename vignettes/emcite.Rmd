@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## The DGPs for Figure 1 in the paper:
+## The DGPs on which Figure 1 in the paper is based upon:
 
 | Title of graph             | $X$                        | $Y(0)$      | $\tau$ |
 |----------------------------|----------------------------|-------------|--------|
@@ -24,6 +24,12 @@ knitr::opts_chunk$set(echo = TRUE)
 | Y:Zaidi Higher, ITE: Athey | Zaidi Higher               | Zaidi Lower | Athey  |
 | Y:Zaidi Lower, ITE: Athey  | Zaidi Lower                | Zaidi Lower | Athey  |
 | Y:Lu, ITE: Lu              | Lu                         | Lu          | Lu     |
+
+## Results per dgp
+
+```{r, out.width="0.3\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Results per DGP (in increasing order of 'hardness' to learn)"), echo=FALSE}
+knitr::include_graphics("./aft_review_new_labels.pdf")
+```
 
 ## Results for IHDP data
 
