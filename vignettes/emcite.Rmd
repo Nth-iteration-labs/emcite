@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Results per dgp
 
 ```{r, out.width="0.3\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Results per DGP (in increasing order of 'hardness' to learn)"), echo=FALSE}
-knitr::include_graphics("./aft_review_new_labels.pdf")
+knitr::include_graphics("./per_dgp_results.pdf")
 ```
 
 ## Results for IHDP data

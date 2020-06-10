@@ -8,6 +8,7 @@ Authors@R:
                   role = c("aut", "cre"))
 Description: Implementation for B-EMCITE algorithm in Batch Mode Active
     Learning for Individual Treatment Effect Estimation submitted for ICDM'20.
+    The per DGP results are in vignettes/per_dgp_results.pdf for $n_1=200$
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
