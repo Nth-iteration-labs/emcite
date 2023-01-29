@@ -101,7 +101,7 @@ fit_gradient_descent <- function(X, tau_predictions, weight_types, parallel=F, R
   if (!R){
     df.tau.model <- cbind(1, X)
   # if (!parallel){
-    thetas <- sgd_py(X = df.tau.model, y = tau_mean, w = prob_of_mistake, theta=NULL)
+    thetas <- sgd_r(X = df.tau.model, y = tau_mean, w = prob_of_mistake, theta=NULL)
     lambda.m1 <- NA
   }
   # } else {
@@ -128,6 +128,31 @@ sgd_py <- function(X, y, w, theta=NULL){
   return(model$coef_)
 }
 
+
+#' Run model in R
+#'
+#' @param X feature matrix
+#' @param y outcomes
+#' @param w weight vector
+#' @param theta initial parameter vector
+#' @export
+sgd_r <- function(X, y, w, theta=NULL){
+  if (is.null(theta)){
+    dat <- data.frame(y=y, X=X)
+    m <- sgd(y~., data=dat,
+        model="glm",
+        model.control = list(wmatrix = diag(length(w))*w))
+    #model$fit(X, y, sample_weight=w)
+  } else {
+    dat <- data.frame(y=y, X=X)
+    m <- sgd(y~., data=dat,
+             model="glm",
+             model.control = list(wmatrix = diag(length(w))*w),
+             sgd.control = list(start = theta))
+  }
+  return(m$coefficients)
+}
+
 sgd_py_p <- function(lista){
   X <- lista[["X"]]
   y <- lista[["y"]]
@@ -137,6 +162,27 @@ sgd_py_p <- function(lista){
   # model = sk$linear_model$SGDRegressor()
   if (is.null(theta)){
     model$fit(X, y, sample_weight=w)
+  } else {
+    # original_weight = np$copy(theta)
+    # model$fit(X, y, sample_weight=w, coef_init=original_weight)
+    m.glm <- cv.glmnet(X, y, weights = w)
+    thetas <- coef(m.glm, s = m.glm$lambda.min)
+  }
+  return(thetas)
+}
+
+sgd_r_p <- function(lista){
+  X <- lista[["X"]]
+  y <- lista[["y"]]
+  w <- lista[["w"]]
+  l1 <- lista[["lambda"]]
+  theta = lista[["theta"]]
+  # model = sk$linear_model$SGDRegressor()
+  if (is.null(theta)){
+    dat <- data.frame(X=X, y=y)
+    m <- sgd(y~., data=dat,
+             model="glm",
+             model.control = list(wmatrix = diag(length(w))*w))
   } else {
     # original_weight = np$copy(theta)
     # model$fit(X, y, sample_weight=w, coef_init=original_weight)
@@ -237,7 +283,7 @@ af <- function(data, tau_train, tau_test, theta, n2,
               sim.value <- ifelse(B>1, draws[simulation, ix.no],  draws[ix.no])
               # In Python, with automated function
 
-              new_theta <- sgd_py(X=as.matrix(cbind(1, rbind(X.train, X.test[ix.no, ]))),
+              new_theta <- sgd_r(X=as.matrix(cbind(1, rbind(X.train, X.test[ix.no, ]))),
                                        y=c(tau_train_mean, sim.value),
                                        w=c(prob_of_mistake_train, prob_of_mistake[ix.no]),
                                        theta = theta)
@@ -289,7 +335,7 @@ af <- function(data, tau_train, tau_test, theta, n2,
             }
           }
         # new_theta_l <- mclapply(lista_to_p, sgd_py_p, mc.cores=(parallel::detectCores()-1))
-        new_theta_l <- lapply(lista_to_p, sgd_py_p)
+        new_theta_l <- lapply(lista_to_p, sgd_r_p)
         # test <- mclapply(new_theta_l, function(x) data.table(values=sum(abs(theta - x))),
         #                  mc.cores = (parallel::detectCores()-1))
         test <- lapply(new_theta_l, function(x) data.table(values=sum(abs(theta - x))))
